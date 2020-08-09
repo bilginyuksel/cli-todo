@@ -1,0 +1,1 @@
+delete compiled dbw file, init-sql file and also init*cpp file after initialization.
