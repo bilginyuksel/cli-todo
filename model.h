@@ -18,10 +18,12 @@ public:
 	project(std::string title){
 		this->title = title;
 	}
-	project(int id, std::string title, std::string desc){
-		this->id = id;
-		this->title = title;
+	project(std::string title, std::string desc): project(title){
 		this->description = desc;
+	}
+
+	project(int id, std::string title, std::string desc): project(title, desc){
+		this->id = id;
 	}
 
 	int get_id();
@@ -40,10 +42,11 @@ public:
 	category(std::string title){
 		this->title= title;
 	}
-	category(int id, std::string title, std::string desc){
-		this->id = id;
-		this->title = title;
+	category(std::string title, std::string desc): category(title) {
 		this->description = desc;
+	}
+	category(int id, std::string title, std::string desc): category(title, desc){
+		this->id = id;
 	}
 
 	int get_id();
@@ -65,8 +68,6 @@ private:
 	project* proj;
 	category* cat;
 
-public:
-	m_todo(){}
 	m_todo(std::string todo){
 		this->todo = todo;
 		this->create_time = time(0);
@@ -78,13 +79,8 @@ public:
 		this->cat = nullptr;
 	}
 
-	m_todo(std::string todo, int cat_id) : m_todo(todo) {
-		this->cat_id = cat_id;
-	}
-	m_todo(std::string todo, int cat_id, int proj_id) : m_todo(todo) {
-		this->proj_id = proj_id;
-		this->cat_id = cat_id;
-	}
+public:
+	class builder;
 
 	int get_id();
 	bool is_done();
