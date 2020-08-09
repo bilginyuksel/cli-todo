@@ -1,0 +1,1 @@
+g++ main.cpp model.cpp // It will compile the model file.
