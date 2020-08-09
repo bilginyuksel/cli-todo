@@ -6,11 +6,12 @@
 
 
 const char* DB_NAME =  "db_todo_cli";
+const char* SQL_FILE = "init-db.sql";
 
 int main(){
 
 
-	std::ifstream file("init-db.sql");
+	std::ifstream file(SQL_FILE);
 	std::string content;
 	content.assign( (std::istreambuf_iterator<char>(file)),
 			(std::istreambuf_iterator<char>()));
@@ -44,10 +45,10 @@ int main(){
 
 
 	// delete files automatically.
-	int status = remove(DB_NAME);
+	int status = remove(SQL_FILE);
 	if(status == 0) std::cout<<"SQL file deleted successfully!\n";
 	else std::cout<<"SQL file couldn't deleted!.\n";
-	
+
 
 	return 0;
 }
