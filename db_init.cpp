@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <stdio.h>
 
 
 const char* DB_NAME =  "db_todo_cli";
@@ -12,7 +13,7 @@ int main(){
 	std::ifstream file("init-db.sql");
 	std::string content;
 	content.assign( (std::istreambuf_iterator<char>(file)),
-				(std::istreambuf_iterator<char>()));
+			(std::istreambuf_iterator<char>()));
 
 	const char* sql_query = content.c_str();
 	for(int i=0;i<content.length(); ++i)
@@ -36,10 +37,17 @@ int main(){
 	if(exec_result != SQLITE_OK){
 		std::cout<<"SQL execution error --- Error Message -> " << err_msg<<"\n";
 		sqlite3_free(err_msg);
+		exit(1);
 	}else std::cout<<"SQL execution completed successfully!\n";
 
 	sqlite3_close(db);
 
+
+	// delete files automatically.
+	int status = remove(DB_NAME);
+	if(status == 0) std::cout<<"SQL file deleted successfully!\n";
+	else std::cout<<"SQL file couldn't deleted!.\n";
+	
 
 	return 0;
 }
