@@ -1,5 +1,7 @@
-#include <iostream>
 #include <ctime>
+#ifndef iostream
+#include <iostream>
+#endif
 
 class project;
 class category;

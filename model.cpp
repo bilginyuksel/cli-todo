@@ -67,6 +67,7 @@ category* m_todo :: get_cat(){
 	return nullptr;
 }
 
+/*
 class m_todo :: builder {
 private:
 	m_todo* td;
@@ -120,6 +121,7 @@ public:
 		return *td;
 	}
 };
+*/
 // ////////////////////////////////////
 // //////////////  LOG  ///////////////////
 // /////////////////////////////////////
