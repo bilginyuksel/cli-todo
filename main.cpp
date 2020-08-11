@@ -3,7 +3,8 @@
 
 int main(){
 	CatRepo* rep = new CatRepo;
-	std::cout<<"Hello world\n";
+	category* cat = new category("pc", "computer related stuff.");
+	rep->save(cat);
 	std::cout<< rep->count()<<"\n";
 	return 0;
 }

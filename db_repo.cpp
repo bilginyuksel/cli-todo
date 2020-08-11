@@ -1,14 +1,37 @@
 #include "db_repo.h"
 
 
+template <class T>
+void CLIAppRepo<T> :: connect(){
+	int err = sqlite3_open("db_todo_cli", &db);
+	if(err);
+	else;
+}
+
+template <class T>
+void CLIAppRepo<T> :: close(){
+	sqlite3_close(db);
+}
+
 // //////////////////////////////////////////////
 // ////////////////// CATEGORY //////////////////
 // //////////////////////////////////////////////
 
-
 void CatRepo :: save(category* data){
-
-}
+	std::string title = data->get_title();
+	std::string description = data->get_desc();
+	std::cout<<"title= "<<title<<"\n";
+	std::cout<<"description= "<<description<<"\n";
+	std::string sql = "INSERT INTO CATEGORY(title, description) VALUES ('"+title+"', '"+description+"');";
+	this->connect();
+	char* err = 0;
+	// db, sql, callback, (void*)data, errMsg
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	std::cout<<"error --> "<<err<<"\n";
+	// Check rc
+	// if(rc != SQLite.OK) -> .....
+	this->close();
+} 
 
 category CatRepo :: remove(category* data) {
 	return *data;
@@ -77,7 +100,8 @@ int ProjRepo :: count(){
 // ////////////////////////////////////
 
 void TodoRepo :: save(m_todo* data){
-
+	const char* sql = "INSERT INTO TODO (val, val, val, val) VALUES ()";
+	
 }
 
 m_todo TodoRepo :: remove(m_todo* data){

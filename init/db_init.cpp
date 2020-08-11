@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 
-const char* DB_NAME =  "../db_todo_cli";
+const char* DB_NAME =  "db_todo_cli";
 const char* SQL_FILE = "init-db.sql";
 
 int main(){

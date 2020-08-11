@@ -1,17 +1,16 @@
 #include "model.h"
 #include <vector>
-#include "db_util.cpp"
+#include <sqlite3.h>
 
 template <class T>
 class CLIAppRepo{
 protected:
-	// Create object to make connection example usage ----- db = new DbConn;
-	// Delete object to close connection run destructor --- delete db;
-	DbConn* db;
-
+	sqlite3 *db;
+	void connect();
+	void close();
 public: 
 	virtual void save(T* data) = 0;
-	virtual T remove(T* data) = 0;
+	virtual T remove(T* daa) = 0;
 	virtual T update(T* old, T* _new) = 0;
 	virtual T find(T* similar) = 0;
 	virtual T find(int id) = 0;
