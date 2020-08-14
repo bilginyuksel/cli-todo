@@ -1,6 +1,7 @@
 #include "model.h"
 #include <vector>
 #include <sqlite3.h>
+#include <string>
 
 template <class T>
 class CLIAppRepo{
@@ -19,6 +20,7 @@ public:
 };
 
 class TodoRepo : public CLIAppRepo<m_todo>{
+	
 public:
 	void save(m_todo* data) override;
 	m_todo remove(m_todo* data) override;

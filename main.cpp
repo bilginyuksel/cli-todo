@@ -5,6 +5,6 @@ int main(){
 	CatRepo* rep = new CatRepo;
 	category* cat = new category("pc", "computer related stuff.");
 	rep->save(cat);
-	std::cout<< rep->count()<<"\n";
+	rep->findAll();
 	return 0;
 }

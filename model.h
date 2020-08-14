@@ -3,6 +3,7 @@
 #include <iostream>
 #endif
 
+class branch;
 class project;
 class category;
 class todo;
@@ -14,6 +15,8 @@ private:
 	int id;
 	std::string title;
 	std::string description;
+	branch* b;
+	int branch_id;
 
 public:
 	project(){}
@@ -38,6 +41,8 @@ private:
 	int id;
 	std::string title;
 	std::string description;
+	branch* b;
+	int branch_id;
 
 public:
 	category(){}
@@ -57,6 +62,21 @@ public:
 };
 
 
+class branch{
+private:
+	// std::vector<m_todo*> todo_list;
+	// std::vector<category*> cat_list;
+	int id;
+	std::string name; // name of the branch
+	// let's say everything need a branch
+	// so actually we don't need a branch class then
+	// we can just add a branch to every class
+	// but maybe branches have some oppurtunities, like merge or like commit
+	std::string uid;
+	
+
+};
+
 class m_todo{
 private:
 	int id;
@@ -69,6 +89,9 @@ private:
 	time_t last_update_time;
 	project* proj;
 	category* cat;
+	branch* b;
+	int branch_id;
+
 
 	m_todo(std::string todo){
 		this->todo = todo;
