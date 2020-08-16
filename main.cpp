@@ -1,4 +1,4 @@
-#include "db_repo.h"
+// #include "db_repo.h"
 #include <unordered_map>
 
 #ifndef iostream
@@ -41,9 +41,10 @@ int main(int argc, char** argv){
 	 *
 	 * */
 
+	// All code will be exited after execution.
 	if(action == "branch" && argc>=3) execute_branch(argc, argv); else about_branch();
-	else if(action == "note" && argc>=3) execute_note(argc, argv); else about_note();
-	else if(action == "category" && argc>=3) execute_category(argc, argv); else about_category();
+	if(action == "note" && argc>=3) execute_note(argc, argv); else about_note();
+	if(action == "category" && argc>=3) execute_category(argc, argv); else about_category();
 
 	return 0;
 }
