@@ -46,8 +46,6 @@ int main(int argc, char** argv){
 	if(action == "note" && argc>=3) execute_note(argc, argv); else about_note();
 	if(action == "category" && argc>=3) execute_category(argc, argv); else about_category();
 
-	return 0;
-}
 
 
 void help(){
