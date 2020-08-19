@@ -3,6 +3,10 @@
 #include <iostream>
 #endif
 
+#ifndef unordered_map
+#include <unordered_map>
+#endif
+
 class branch;
 class project;
 class category;
@@ -59,6 +63,13 @@ public:
 	int get_id();
 	std::string get_title();
 	std::string get_desc();
+	
+
+	void fill_category(std::unordered_map<std::string, char*> map){
+		this->id = static_cast<int>(*map["id"]);
+		this->title = map["title"];
+		this->description = map["description"];
+	}
 };
 
 

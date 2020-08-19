@@ -1,5 +1,8 @@
-// #include "db_repo.h"
+#include "db_repo.h"
+
+#ifndef unordered_map
 #include <unordered_map>
+#endif
 
 #ifndef iostream
 #include <iostream>
@@ -28,6 +31,10 @@ int main(int argc, char** argv){
 //	rep->save(cat);
 //	std::cout<< rep->count()<<"\n";
 
+	std::cout<<"argc= "<<argc<<"\n";
+	for(int i=0; i<argc; ++i)
+		std::cout<<argv[i]<<"\n";
+
 	// application started without parameters
 	if(argc == 1) about();
 	
@@ -46,7 +53,7 @@ int main(int argc, char** argv){
 	if(action == "note" && argc>=3) execute_note(argc, argv); else about_note();
 	if(action == "category" && argc>=3) execute_category(argc, argv); else about_category();
 
-
+}
 
 void help(){
 	std::cout<<"Help message\n";
@@ -71,6 +78,8 @@ void execute_branch(int argc, char** argv){
 	// branch name is a must
 	// argv <options>, [-a, --all, -d, --delete]
 	// argv [--name]
+	std::cout<<"argv[2]= "<<argv[2]<<"\n";
+	show_all_branches();
 	if(argv[2] == "-a" || argv[2] == "-all")
 		show_all_branches();
 
@@ -109,6 +118,13 @@ void delete_branch(std::string name) throw (std::string){
 
 void show_all_branches(){
 	// TODO show all branches
+	std::cout<<"Show all branches\n";
+	CatRepo* rp = new CatRepo;
+	std::vector<category> cat = rp->findAll();
+	std::cout<<"Size of the cat= "<<cat.size()<<"\n";
+	for(category c : cat)
+		std::cout<<c.get_title()<<"\n";	
+	exit(1);
 }
 
 void execute_note(int argc, char** argv){

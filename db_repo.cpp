@@ -17,29 +17,27 @@ void CLIAppRepo<T> :: close(){
 }
 
 
-struct type_repo{
-	std::string type;
-	void* repo_obj;
-};
 
 static int callback(void *param, int argc, char **argv, char **azColName){
-	
-	// you can callback other functons here.
-	// like if(type_repo->type == "category") cat->callback();
-	// or just fill it here! according to your needs.
-	type_repo* t_rep = static_cast<type_repo*>(param);
-	if(t_rep -> type == "category"){
-		std::cout<<"Category found!\n";
-		category* c = static_cast<category*>(t_rep->repo_obj);
-			
+
+	std::unordered_map<std::string, char*> map;
+	for(int i=0; i<argc; ++i)
+		map[azColName[i]] = argv[i]? argv[i]: nullptr;
+
+	struct sql_type_and_vector* stav = static_cast<struct sql_type_and_vector*>(param);
+	std::string type = stav->type;
+
+	if(type == "cat"){
+		std::vector<category>* ct = static_cast<std::vector<category>*>(stav->vec);
+		category c;
+		c.fill_category(map);
+		ct->push_back(c);
+	}else if(type == "m_todo"){	
+		std::vector<m_todo>* mt = static_cast<std::vector<m_todo>*>(stav->vec);
+	}else if(type == "proj"){
+		std::vector<project>* pr = static_cast<std::vector<project>*>(stav->vec);
 	}
 
-
-	for(int i=0; i<argc; ++i){
-		std::cout<<azColName[i]<<"= "<<(argv[i] ? argv[i] : "NULL")<<"\n";
-	}
-	std::cout<<"\n";
-	// Try to solve is return type matters.
 	return 0;
 }
 
@@ -87,11 +85,8 @@ category CatRepo :: find(int id) {
 	std::string sql = "SELECT * FROM CATEGORY WHERE id="+std::to_string(id)+";";
 	category* c = new category;
 	
-	type_repo* t = new type_repo;
-	t->type = "category";
-	t->repo_obj = static_cast<void*>(c);
 
-	int rc= sqlite3_exec(db, sql.c_str(), callback, t, &err);
+	int rc= sqlite3_exec(db, sql.c_str(), callback, nullptr, &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
@@ -104,20 +99,19 @@ std::vector<category> CatRepo :: findAll() {
 	char *err = 0;
 	this->connect();
 
-	std::cout<<"Inside find all\n";
 	std::string sql = "SELECT * FROM CATEGORY;";
 
-	category* c = new category("my-branch", "come_on_description");
-
-	type_repo* t = new type_repo;
-
-	t->type = "category";
-	t->repo_obj = static_cast<void*>(c);
-	int rc = sqlite3_exec(db, sql.c_str(), callback, t, &err);
+	this->categories.clear();
+//	struct cat_node* head = nullptr;
+	struct sql_type_and_vector* stav = new sql_type_and_vector;
+	stav->type = "cat";
+	stav->vec = static_cast<void*>(&this->categories);
+	
+	int rc = sqlite3_exec(db, sql.c_str(), callback, static_cast<void*>(stav), &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
-	return std::vector<category>();
+	return this->categories;
 } 
 
 

@@ -2,6 +2,7 @@
 #include <vector>
 #include <sqlite3.h>
 #include <string>
+#include <unordered_map>
 
 template <class T>
 class CLIAppRepo{
@@ -20,7 +21,8 @@ public:
 };
 
 class TodoRepo : public CLIAppRepo<m_todo>{
-	
+private:
+	std::vector<m_todo> todos;
 public:
 	void save(m_todo* data) override;
 	m_todo remove(m_todo* data) override;
@@ -30,7 +32,12 @@ public:
 	std::vector<m_todo> findAll() override;
 	int count() override;
 };
+
+void add_category(int, char**, char**, std::vector<category>&);
 class CatRepo : public CLIAppRepo<category>{
+private:
+	std::vector<category> categories;
+	friend void add_category(int, char**, char**, std::vector<category>&);
 public:
 	void save(category* data) override;
 	category remove(category* data) override;
@@ -41,6 +48,8 @@ public:
 	int count() override;	
 };
 class ProjRepo : public CLIAppRepo<project>{
+private:
+	std::vector<project> projects;
 public:
 	void save(project* data) override;
 	project remove(project* data) override;
@@ -51,4 +60,9 @@ public:
 	int count() override;
 };
 
+
+struct sql_type_and_vector {
+	char* type;
+	void* vec;	
+};
 
