@@ -1,0 +1,1 @@
+Create a new table called user or settings I don't know. But the table needs to created because you need to store current information about user. Like last operations, current branch and I don't know. I think checking project current value all the time is not a good practice. When you query todo's you don't want to check every projects current column.

@@ -17,6 +17,15 @@ void CLIAppRepo<T> :: close(){
 }
 
 
+template <typename T>
+void* convert_to_stav(char* type, std::vector<T>& vec){
+
+	struct sql_type_and_vector* stav = new sql_type_and_vector;
+	stav->type = type;
+	stav->vec = static_cast<void*>(&vec);
+	
+	return static_cast<void*>(stav);
+}
 
 static int callback(void *param, int argc, char **argv, char **azColName){
 
@@ -81,19 +90,38 @@ category CatRepo :: find(int id) {
 	char* err = 0;
 
 	this->connect();
-	std::cout<<"inside category\n";
+//	std::cout<<"inside category\n";
 	std::string sql = "SELECT * FROM CATEGORY WHERE id="+std::to_string(id)+";";
 	category* c = new category;
 	
 
-	int rc= sqlite3_exec(db, sql.c_str(), callback, nullptr, &err);
+	this->categories.clear();
+	int rc= sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
 
+	// if exists return first element if not return NULL
+	if(this->categories.size() > 0) return this->categories[0];
 	return *c;
 }
 
+category CatRepo :: find(std::string title){
+
+	char* err = 0;
+
+	this->connect();
+	std::string sql = "SELECT * FROM CATEGORY WHERE title='" + title + "';";
+	category* c = new category;
+
+	this->categories.clear();
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
+
+	this->close();
+
+	if(this->categories.size() > 0) return this->categories[0];
+	return *c;
+}
 
 std::vector<category> CatRepo :: findAll() {
 	char *err = 0;
@@ -102,12 +130,8 @@ std::vector<category> CatRepo :: findAll() {
 	std::string sql = "SELECT * FROM CATEGORY;";
 
 	this->categories.clear();
-//	struct cat_node* head = nullptr;
-	struct sql_type_and_vector* stav = new sql_type_and_vector;
-	stav->type = "cat";
-	stav->vec = static_cast<void*>(&this->categories);
 	
-	int rc = sqlite3_exec(db, sql.c_str(), callback, static_cast<void*>(stav), &err);
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
@@ -125,27 +149,66 @@ int CatRepo :: count() {
 
 void ProjRepo :: save(project* data){
 
+	std::string title = data->get_title();
+	std::string uuid = data->get_uuid();
+	std::string description = data->get_desc();
+	bool archived = data->is_archived();
+	bool curr = data->is_curr();	
+	
+	std::string sql = "INSERT INTO PROJECT(title, description, uuid, archived, curr) VALUES ('"+title+"', '"+description+"', '" + uuid + "');";
+	this->connect();
+	char* err = 0;
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	//std::cout<<"error --> "<<*err<<"\n";
+	// Check rc
+	// if(rc != SQLite.OK) -> .....
+	this->close();
 }
 
 project ProjRepo :: remove(project* data){
+	
+	// delete according to every important content
+	// it doesn't matter what info they're about to give us.
+	// try to find best matching part, i mean uuid's, or names.
+	// names are important for projects so make name column unique.
+	std::string sql = "DELETE FROM PROJECT WHERE id=";
 	return *data;
 }
 
+// Not important maybe edit in the future if you need this feature.
 project ProjRepo :: update(project* old, project* _new){
 	return *old;
 }
+
 
 project ProjRepo :: find(project* similar){
 	return *similar;
 }
 
 project ProjRepo :: find(int id){
+
+	char *err = 0;
+	this->connect();
+	this->projects.clear();
+
+	std::string sql = "SELECT * FROM PROJECT WHERE id="+std::to_string(id)+";";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+
+	this->close();
+	if(this->projects.size() > 0) return this->projects[0];
 	project p;
 	return p;
 }
 
 std::vector<project> ProjRepo :: findAll(){
-	return std::vector<project>();
+	char* err = 0;
+	this->connect();
+	this->projects.clear();
+	std::string sql = "SELECT * FROM PROJECT;";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+
+	this->close(); 	
+	return this->projects;
 }
 
 int ProjRepo :: count(){

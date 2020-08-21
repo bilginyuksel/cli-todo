@@ -19,12 +19,18 @@ private:
 	int id;
 	std::string title;
 	std::string description;
-	branch* b;
-	int branch_id;
+	std::string uuid;
+	bool curr, archived;
+	time_t create_time;
+	time_t last_update_time;
 
 public:
-	project(){}
-	project(std::string title){
+	project(){
+		this->archived = false;
+		this->curr = false;
+		this->uuid = "iii"; // declare uuid
+	}
+	project(std::string title): project() {
 		this->title = title;
 	}
 	project(std::string title, std::string desc): project(title){
@@ -38,6 +44,19 @@ public:
 	int get_id();
 	std::string get_title();
 	std::string get_desc();
+	std::string get_uuid();
+	bool is_archived();
+	bool is_done();
+	bool is_curr();
+	
+	void fill_project(std::unordered_map<std::string, char*> map){
+		this->id = static_cast<int>(*map["id"]);
+		this->title = map["title"];
+		this->description = map["description"];
+		this->uuid = map["uuid"];
+		this->curr = static_cast<int>(*map["archived"]);
+		this->archived = static_cast<int>(*map["curr"]);
+	} 
 };
 
 class category{
@@ -126,6 +145,23 @@ public:
 	std::string get_last_update_time();
 	project* get_proj();
 	category* get_cat();
+
+
+	
+/*	void fill_m_todo(std::unordered_map<std::string, char*> map){
+		this->id = static_cast<int>(*map["id"]);
+		this->done = static_cast<bool>(*map["done"]);
+		this->archived = static_cast<bool>(*map["archived"]);
+		this->lvl = static_cast<int>(*map["lvl"]); // check this maybe it is level
+			
+		this->todo = map["todo"];
+		this->description = map["description"];
+		
+		std::cout<<"create time ==> "<<map["create_time"]<<"\n";
+		std::cout<<"update time ==> "<< map["last_update_time"]<<"\n";
+		this->create_time = nullptr;
+		this->last_update_time = nullptr;
+	}*/
 };
 
 class log{

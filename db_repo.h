@@ -42,11 +42,15 @@ public:
 	void save(category* data) override;
 	category remove(category* data) override;
 	category update(category* old, category* _new) override;
-       	category find(category* similar) override;
+    category find(category* similar) override;
 	category find(int id) override;
 	std::vector<category> findAll() override;
 	int count() override;	
+
+	// Find category by title - <category-name>
+	category find(std::string title);
 };
+
 class ProjRepo : public CLIAppRepo<project>{
 private:
 	std::vector<project> projects;

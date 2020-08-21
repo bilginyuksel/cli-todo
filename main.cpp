@@ -15,21 +15,20 @@ void about();
 void execute_branch(int, char**);
 void execute_note(int, char**);
 void execute_category(int, char**);
+void execute_checkout(int, char**);
 
 void about_note();
 void about_branch();
 void about_category();
+void about_checkout();
 
 void add_new_branch(std::string);
 void show_all_branches();
 void delete_branch(std::string) throw (std::string); // it needs to throw an exception
 
-int main(int argc, char** argv){
+CatRepo* rp = new CatRepo;
 
-//	CatRepo* rep = new CatRepo;
-//	category* cat = new category("pc", "computer related stuff.");
-//	rep->save(cat);
-//	std::cout<< rep->count()<<"\n";
+int main(int argc, char** argv){
 
 	std::cout<<"argc= "<<argc<<"\n";
 	for(int i=0; i<argc; ++i)
@@ -52,6 +51,7 @@ int main(int argc, char** argv){
 	if(action == "branch" && argc>=3) execute_branch(argc, argv); else about_branch();
 	if(action == "note" && argc>=3) execute_note(argc, argv); else about_note();
 	if(action == "category" && argc>=3) execute_category(argc, argv); else about_category();
+	if(action == "checkout" && argc>=3) execute_checkout(argc, argv); else about_checkout();
 
 }
 
@@ -61,17 +61,29 @@ void help(){
 }
 
 void about(){
-	std::cout<<"About this [X]\n";
+	std::cout<<"Follow the pattern below to use the application.\n";
+	std::cout<<"==> <command> <options> [<args>]\n";
+	std::cout<<"\n\nCOMMANDS\n";
+	std::cout<<"branch\nnote\ncategory\n"; 
 	exit(1);
 }
 
 void about_branch(){}
 void about_note(){}
 void about_category(){}
+void about_checkout(){}
 
 void version(){
 	std::cout<<"cli-todo_1.0.0\n";
 	exit(1);
+}
+
+void execute_checkout(int argc, char** argv){
+	std::cout<<"argv[2]= "<<argv[2]<<"\n";
+	category c = rp-> find(argv[2]);	
+	std::cout<<"Category found\n";
+	std::cout<<"title: "<<c.get_title()<<"\n";
+	std::cout<<"description: "<<c.get_desc()<<"\n";
 }
 
 void execute_branch(int argc, char** argv){
@@ -108,6 +120,8 @@ void execute_branch(int argc, char** argv){
 	add_new_branch(new_branch);
 }
 
+
+
 void add_new_branch(std::string name){
 	// TODO Add branch code goes here.
 }
@@ -119,7 +133,6 @@ void delete_branch(std::string name) throw (std::string){
 void show_all_branches(){
 	// TODO show all branches
 	std::cout<<"Show all branches\n";
-	CatRepo* rp = new CatRepo;
 	std::vector<category> cat = rp->findAll();
 	std::cout<<"Size of the cat= "<<cat.size()<<"\n";
 	for(category c : cat)
