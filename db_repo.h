@@ -60,6 +60,7 @@ public:
 	project update(project* old, project* _new) override;
 	project find(project* similar) override;
 	project find(int id) override;
+	project find(std::string);
 	std::vector<project> findAll() override;
 	int count() override;
 };

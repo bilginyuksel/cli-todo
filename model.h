@@ -21,14 +21,18 @@ private:
 	std::string description;
 	std::string uuid;
 	bool curr, archived;
+	bool all_done;
 	time_t create_time;
 	time_t last_update_time;
+	time_t expire_time; // future release
 
 public:
 	project(){
 		this->archived = false;
 		this->curr = false;
 		this->uuid = "iii"; // declare uuid
+		this->all_done = false;
+		// create time and last update time
 	}
 	project(std::string title): project() {
 		this->title = title;
@@ -46,8 +50,8 @@ public:
 	std::string get_desc();
 	std::string get_uuid();
 	bool is_archived();
-	bool is_done();
 	bool is_curr();
+	bool is_all_done();
 	
 	void fill_project(std::unordered_map<std::string, char*> map){
 		this->id = static_cast<int>(*map["id"]);
@@ -56,6 +60,7 @@ public:
 		this->uuid = map["uuid"];
 		this->curr = static_cast<int>(*map["archived"]);
 		this->archived = static_cast<int>(*map["curr"]);
+		this->all_done = static_cast<int>(*map["all_done"]);
 	} 
 };
 
@@ -64,8 +69,6 @@ private:
 	int id;
 	std::string title;
 	std::string description;
-	branch* b;
-	int branch_id;
 
 public:
 	category(){}
@@ -92,20 +95,6 @@ public:
 };
 
 
-class branch{
-private:
-	// std::vector<m_todo*> todo_list;
-	// std::vector<category*> cat_list;
-	int id;
-	std::string name; // name of the branch
-	// let's say everything need a branch
-	// so actually we don't need a branch class then
-	// we can just add a branch to every class
-	// but maybe branches have some oppurtunities, like merge or like commit
-	std::string uid;
-	
-
-};
 
 class m_todo{
 private:
@@ -119,8 +108,6 @@ private:
 	time_t last_update_time;
 	project* proj;
 	category* cat;
-	branch* b;
-	int branch_id;
 
 
 	m_todo(std::string todo){
@@ -146,12 +133,11 @@ public:
 	project* get_proj();
 	category* get_cat();
 
-
 	
-/*	void fill_m_todo(std::unordered_map<std::string, char*> map){
+	void fill_m_todo(std::unordered_map<std::string, char*> map){
 		this->id = static_cast<int>(*map["id"]);
-		this->done = static_cast<bool>(*map["done"]);
-		this->archived = static_cast<bool>(*map["archived"]);
+		this->done = static_cast<int>(*map["done"]);
+		this->archived = static_cast<int>(*map["archived"]);
 		this->lvl = static_cast<int>(*map["lvl"]); // check this maybe it is level
 			
 		this->todo = map["todo"];
@@ -159,9 +145,9 @@ public:
 		
 		std::cout<<"create time ==> "<<map["create_time"]<<"\n";
 		std::cout<<"update time ==> "<< map["last_update_time"]<<"\n";
-		this->create_time = nullptr;
-		this->last_update_time = nullptr;
-	}*/
+		this->create_time = 0;
+		this->last_update_time = 0;
+	}
 };
 
 class log{

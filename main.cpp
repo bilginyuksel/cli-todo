@@ -56,15 +56,32 @@ int main(int argc, char** argv){
 }
 
 void help(){
-	std::cout<<"Help message\n";
+	about();
 	exit(1);
 }
 
 void about(){
-	std::cout<<"Follow the pattern below to use the application.\n";
-	std::cout<<"==> <command> <options> [<args>]\n";
-	std::cout<<"\n\nCOMMANDS\n";
-	std::cout<<"branch\nnote\ncategory\n"; 
+	std::string poo = "\xF0\x9F\x92\xA9";
+	std::string confused_face = "\xF0\x9F\x98\x95";
+	std::string exclamation_mark = "\xE2\x9D\x97";
+	std::string question_mark = "\xE2\x9D\x93";
+	std::string cross_mark = "\xE2\x9D\x8C";
+	std::string check_mark = "\xE2\x9C\x85";
+	std::string warning_sign = "\xE2\x9A\xA0"; // very tiny
+	std::string clock = "\xF0\x9F\x95\x95";
+	std::string dollar = "\xF0\x9F\x92\xB2";
+//	std::cout<<cross_mark<<exclamation_mark<<check_mark<<question_mark<<warning_sign<<clock<<"\n";
+	std::string flame = "\xF0\x9F\x94\xA5";
+	std::cout<<"\n\n"<<flame<<flame<<" Usage "<<poo<<poo<<"\n\n";
+	std::cout<<"  "<<dollar<<"tod <command> <options> [<args>]\n";
+	std::cout<<"\nGlobal Commands:\n";
+	std::cout<<"\n  "<<dollar<<"branch <options> [<args>]......................Your notes will be stored at branches to avoid conflicts.";
+	std::cout<<"\n  "<<dollar<<"note <options> [<args>]........................You can register, delete, update a note to a branch.";
+	std::cout<<"\n  "<<dollar<<"category <options> [<args>]....................Categorize your notes. And get categorized notes of yours.";
+	std::cout<<"\n  "<<dollar<<"checkout [<branch-name>].......................Switch your working branches.\n";
+	std::cout<<"\n"<<confused_face<<confused_face<<" Did you try to say ?";
+	std::cout<<"\n\n\n\n";
+
 	exit(1);
 }
 

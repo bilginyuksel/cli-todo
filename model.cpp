@@ -16,6 +16,22 @@ std::string project :: get_desc(){
 	return description;
 }
 
+std::string project :: get_uuid(){
+	return uuid;
+}
+
+bool project :: is_archived(){
+	return archived;	
+}
+
+bool project :: is_all_done(){
+	return all_done;
+}
+
+bool project :: is_curr(){
+	return curr;	
+}
+
 
 // /////////////////////////////
 // ///////  CATEGORY  /////////////
@@ -67,61 +83,6 @@ category* m_todo :: get_cat(){
 	return nullptr;
 }
 
-/*
-class m_todo :: builder {
-private:
-	m_todo* td;
-public:
-	builder(std::string todo){
-		td = new m_todo(todo);
-	}
-
-	builder& project_id(int proj_id){
-		td->proj_id = proj_id;
-		return *this;
-	}
-
-	builder& project(project *p){
-		td->proj = p;
-		return *this;
-	}
-
-	builder& category_id(int cat_id){
-		td->cat_id = cat_id;
-		return *this;
-	}
-
-	builder& category(category *c){
-		td->cat = c;
-		return *this;
-	}
-
-	builder& level(int lvl){
-		td->lvl = lvl;
-		return *this;
-	}
-
-	builder& description(std::string desc){
-		td->description = desc;
-		return *this;
-	}
-
-	builder& last_update_time(std::string last_update_time){
-		
-		return *this;
-	}
-
-	// Find out how to turn this string time to real time_t or 
-	// the other one. Find the best suits for the job.
-	builder& create_time(std::string create_time){
-		return *this;
-	}
-
-	m_todo build(){
-		return *td;
-	}
-};
-*/
 // ////////////////////////////////////
 // //////////////  LOG  ///////////////////
 // /////////////////////////////////////

@@ -154,6 +154,7 @@ void ProjRepo :: save(project* data){
 	std::string description = data->get_desc();
 	bool archived = data->is_archived();
 	bool curr = data->is_curr();	
+	bool all_done = data->is_all_done();
 	
 	std::string sql = "INSERT INTO PROJECT(title, description, uuid, archived, curr) VALUES ('"+title+"', '"+description+"', '" + uuid + "');";
 	this->connect();
@@ -195,6 +196,22 @@ project ProjRepo :: find(int id){
 	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
 
 	this->close();
+	if(this->projects.size() > 0) return this->projects[0];
+	project p;
+	return p;
+}
+
+project ProjRepo :: find(std::string title){
+	
+	char* err = 0;
+	this->connect();
+	this->projects.clear();
+
+	// Use like sql query here.
+	std::string sql = "SELECT * FROM PROJECT WHERE title LIKE '"+title+"'%;";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+	this->close();
+
 	if(this->projects.size() > 0) return this->projects[0];
 	project p;
 	return p;
