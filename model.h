@@ -110,7 +110,8 @@ private:
 	time_t last_update_time;
 	project* proj;
 	category* cat;
-
+	std::string cr_time;
+	std::string lu_time;
 
 public:
 //	class builder;
@@ -143,19 +144,19 @@ public:
 	std::string get_last_update_time();
 	project* get_proj();
 	category* get_cat();
+	std::string get_cr_time();
+	std::string get_lu_time();	
 
-	
 	void fill_m_todo(std::unordered_map<std::string, char*> map){
 		this->id = std::atoi(map["id"]);
 		this->done = std::atoi(map["done"]);
 		this->archived = std::atoi(map["archived"]);
-		this->lvl = std::atoi(map["lvl"]); // check this maybe it is level
+		this->lvl = std::atoi(map["level"]); // check this maybe it is level
 		this->proj_id = std::atoi(map["project_id"]);	
 		this->todo = map["todo"];
 		this->description = map["description"];
-		
-		std::cout<<"create time ==> "<<map["create_time"]<<"\n";
-		std::cout<<"update time ==> "<< map["last_update_time"]<<"\n";
+		this->cr_time = map["create_time"];
+		this->lu_time = map["last_update_time"];
 		this->create_time = 0;
 		this->last_update_time = 0;
 	}

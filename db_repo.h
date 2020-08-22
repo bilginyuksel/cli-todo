@@ -31,7 +31,7 @@ public:
 	m_todo find(m_todo* similar) override;
 	m_todo find(int id) override;
 	std::vector<m_todo> findAll() override;
-	std::vector<m_todo> findAll(int);
+	std::vector<m_todo> find_all_todos(int);
 	std::vector<m_todo> find_undone_todos(int);
 	int count() override;
 };
@@ -69,6 +69,7 @@ public:
 	std::vector<project> findAll() override;
 	int count() override;
 	project find_exact_match(std::string);
+	void make_status_undone(int);
 	void remove(std::string) throw (const char*);
 };
 

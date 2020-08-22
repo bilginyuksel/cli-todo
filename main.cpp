@@ -230,13 +230,13 @@ void show_all_branches(){
 }
 
 void execute_note(int argc, std::vector<std::string>& argv){
-	
+
 	if(argv[2] == "--help" || argv[2]=="-h") about_note();	
 	if(argv[2] == "--list" || argv[2] == "-l") show_notes(argc, argv);
 	if(argv[2] == "--delete" || argv[2] == "-d") delete_note(argc, argv);
 
 	// or add note
-	if(argc>4) add_note(argc, argv);
+	if(argc>3) add_note(argc, argv);
 	
 	exit(1);
 }
@@ -245,16 +245,16 @@ void show_notes(int argc, std::vector<std::string>& argv){
 	
 	int curr_branch = sr->curr_branch();	
 
-	if(!argc>3){
-		// list notes here...
-		std::vector<m_todo> todos = tr->findAll(curr_branch);
-		std::cout<<std::endl;
-		for(m_todo tod : todos){
-			if(tod.get_importance_lvl()) std::cout<<exclamation_mark;
-			std::cout<<(tod.is_done()?check_mark: cross_mark);
-			std::cout<<tod.get_todo()<<std::endl;
-		}std::cout<<std::endl;
-	}
+	
+	// list notes here...
+	std::vector<m_todo> todos = tr->find_all_todos(curr_branch);
+	std::cout<<std::endl;
+	for(m_todo tod : todos){
+		if(tod.get_importance_lvl()) std::cout<<exclamation_mark;
+		std::cout<<(tod.is_done()?check_mark: cross_mark);
+		std::cout<<" "<<tod.get_todo()<<std::endl;
+	}std::cout<<std::endl;
+	
 
 	// Now try to understand commands here. 
 	// First look there can be 2 commands here.
@@ -292,9 +292,9 @@ void delete_note(int argc, std::vector<std::string>& argv){
 
 void add_note(int argc, std::vector<std::string>& argv){
 	
-	// Add note.
-	if(argv[3]=="--title" || argv[3]=="-t"){
-		std::string title = argv[4];
+	if(argv[2]=="--title" || argv[2]=="-t"){
+		std::string title = argv[3];
+		// Add note to current branch at db_repo
 		m_todo* new_note = new m_todo(title);
 		tr->save(new_note);
 	}	
