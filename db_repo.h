@@ -23,6 +23,7 @@ public:
 class TodoRepo : public CLIAppRepo<m_todo>{
 private:
 	std::vector<m_todo> todos;
+	char* TAG = "m_todo";
 public:
 	void save(m_todo* data) override;
 	m_todo remove(m_todo* data) override;
@@ -30,12 +31,15 @@ public:
 	m_todo find(m_todo* similar) override;
 	m_todo find(int id) override;
 	std::vector<m_todo> findAll() override;
+	std::vector<m_todo> findAll(int);
+	std::vector<m_todo> find_undone_todos(int);
 	int count() override;
 };
 
 void add_category(int, char**, char**, std::vector<category>&);
 class CatRepo : public CLIAppRepo<category>{
 private:
+	char* TAG = "cat";
 	std::vector<category> categories;
 	friend void add_category(int, char**, char**, std::vector<category>&);
 public:
@@ -53,6 +57,7 @@ public:
 
 class ProjRepo : public CLIAppRepo<project>{
 private:
+	char* TAG = "proj";
 	std::vector<project> projects;
 public:
 	void save(project* data) override;
@@ -63,8 +68,25 @@ public:
 	project find(std::string);
 	std::vector<project> findAll() override;
 	int count() override;
+	project find_exact_match(std::string);
+	void remove(std::string) throw (const char*);
 };
 
+class SettingsRepo : public CLIAppRepo<settings>{
+private:
+	char* TAG = "settings";
+	void save(settings* data) override;
+	settings remove(settings* data) override;
+	settings update(settings* old, settings* _new) override;
+	settings find(settings* similar) override;
+	settings find(int id) override;
+	settings find(std::string);
+	std::vector<settings> findAll() override;
+	int count() override;
+public:
+	int curr_branch();
+	void update_curr_branch(int);
+};
 
 struct sql_type_and_vector {
 	char* type;

@@ -68,6 +68,22 @@ int m_todo :: get_importance_lvl(){
 	return lvl;
 }
 
+int m_todo :: get_project_id(){
+	return proj_id;
+}
+
+int m_todo :: get_category_id(){
+	return cat_id;
+}
+
+std::string m_todo :: get_todo(){
+	return todo;
+}
+
+std::string m_todo :: get_desc(){
+	return description;
+}
+
 std::string m_todo :: get_create_time(){
 	return ctime(&create_time);
 }
@@ -98,3 +114,13 @@ std::string log :: get_log_type(){
 std::string log :: get_desc(){
 	return description;
 }
+
+
+// /////////////////////////////////////////
+// ////////////// SETTINGS //////////////////
+// ///////////////////////////////////////////
+
+int settings :: get_curr_branch_id() {
+	return curr_branch_id;
+}
+

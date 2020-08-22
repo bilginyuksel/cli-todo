@@ -28,10 +28,11 @@ private:
 
 public:
 	project(){
+		this->id = -1;
 		this->archived = false;
 		this->curr = false;
 		this->uuid = "iii"; // declare uuid
-		this->all_done = false;
+		this->all_done = true;
 		// create time and last update time
 	}
 	project(std::string title): project() {
@@ -54,13 +55,13 @@ public:
 	bool is_all_done();
 	
 	void fill_project(std::unordered_map<std::string, char*> map){
-		this->id = static_cast<int>(*map["id"]);
+		this->id = std::atoi(map["id"]);
 		this->title = map["title"];
 		this->description = map["description"];
 		this->uuid = map["uuid"];
-		this->curr = static_cast<int>(*map["archived"]);
-		this->archived = static_cast<int>(*map["curr"]);
-		this->all_done = static_cast<int>(*map["all_done"]);
+		this->curr = std::atoi(map["archived"]);
+		this->archived = std::atoi(map["curr"]);
+		this->all_done = std::atoi(map["all_done"]);
 	} 
 };
 
@@ -88,7 +89,7 @@ public:
 	
 
 	void fill_category(std::unordered_map<std::string, char*> map){
-		this->id = static_cast<int>(*map["id"]);
+		this->id = std::atoi(map["id"]);
 		this->title = map["title"];
 		this->description = map["description"];
 	}
@@ -103,6 +104,7 @@ private:
 	bool done, archived;
 	int lvl;
 	std::string todo;
+	std::string uuid;
 	std::string description;
 	time_t create_time;
 	time_t last_update_time;
@@ -110,24 +112,33 @@ private:
 	category* cat;
 
 
-	m_todo(std::string todo){
-		this->todo = todo;
-		this->create_time = time(0);
+public:
+//	class builder;
+	
+	m_todo(){
+		this->uuid = "sampleuuid";
 		this->lvl = 0;
 		this->done = false;
 		this->archived = false;
+		this->create_time = time(0);		
 		this->last_update_time = time(0);
 		this->proj = nullptr;
 		this->cat = nullptr;
-	}
+	}	
 
-public:
-	class builder;
+	m_todo(std::string todo) : m_todo(){
+		this->todo = todo;
+	}
 
 	int get_id();
 	bool is_done();
 	bool is_archived();
 	int get_importance_lvl();
+	int get_project_id();
+	int get_category_id();
+	std::string get_uuid();
+	std::string get_todo();
+	std::string get_desc();
 	std::string get_create_time();
 	std::string get_last_update_time();
 	project* get_proj();
@@ -135,11 +146,11 @@ public:
 
 	
 	void fill_m_todo(std::unordered_map<std::string, char*> map){
-		this->id = static_cast<int>(*map["id"]);
-		this->done = static_cast<int>(*map["done"]);
-		this->archived = static_cast<int>(*map["archived"]);
-		this->lvl = static_cast<int>(*map["lvl"]); // check this maybe it is level
-			
+		this->id = std::atoi(map["id"]);
+		this->done = std::atoi(map["done"]);
+		this->archived = std::atoi(map["archived"]);
+		this->lvl = std::atoi(map["lvl"]); // check this maybe it is level
+		this->proj_id = std::atoi(map["project_id"]);	
 		this->todo = map["todo"];
 		this->description = map["description"];
 		
@@ -159,4 +170,13 @@ public:
 	int get_id();
 	std::string get_log_type();
 	std::string get_desc();
+};
+
+
+class settings{
+	int id;
+	int curr_branch_id;
+
+public:
+	int get_curr_branch_id();
 };

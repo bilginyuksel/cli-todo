@@ -4,15 +4,15 @@
 template <class T>
 void CLIAppRepo<T> :: connect(){
 	int err = sqlite3_open("db_todo_cli", &db);
-	if(err){
-		std::cout<<"error happened\n";
-	}
-	else std::cout<<"Successfully joined!\n";
+//	if(err){
+//		std::cout<<"error happened\n";
+//	}
+//	else std::cout<<"Successfully joined!\n";
 }
 
 template <class T>
 void CLIAppRepo<T> :: close(){
-	std::cout<<"Database closed!\n";
+//	std::cout<<"Database closed!\n";
 	sqlite3_close(db);
 }
 
@@ -43,8 +43,14 @@ static int callback(void *param, int argc, char **argv, char **azColName){
 		ct->push_back(c);
 	}else if(type == "m_todo"){	
 		std::vector<m_todo>* mt = static_cast<std::vector<m_todo>*>(stav->vec);
+		m_todo m;
+		m.fill_m_todo(map);
+		mt->push_back(m);
 	}else if(type == "proj"){
 		std::vector<project>* pr = static_cast<std::vector<project>*>(stav->vec);
+		project p;
+		p.fill_project(map);
+		pr->push_back(p);
 	}
 
 	return 0;
@@ -96,7 +102,7 @@ category CatRepo :: find(int id) {
 	
 
 	this->categories.clear();
-	int rc= sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
+	int rc= sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->categories), &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
@@ -115,7 +121,7 @@ category CatRepo :: find(std::string title){
 	category* c = new category;
 
 	this->categories.clear();
-	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->categories), &err);
 
 	this->close();
 
@@ -131,7 +137,7 @@ std::vector<category> CatRepo :: findAll() {
 
 	this->categories.clear();
 	
-	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("cat", this->categories), &err);
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->categories), &err);
 	//std::cout<<"\nerror= "<<err<<"\n";
 
 	this->close();
@@ -156,7 +162,7 @@ void ProjRepo :: save(project* data){
 	bool curr = data->is_curr();	
 	bool all_done = data->is_all_done();
 	
-	std::string sql = "INSERT INTO PROJECT(title, description, uuid, archived, curr) VALUES ('"+title+"', '"+description+"', '" + uuid + "');";
+	std::string sql = "INSERT INTO PROJECT(title, description, uuid, archived, curr, all_done) VALUES ('"+title+"', '"+description+"', '" + uuid + "',"+ std::to_string(archived)+","+ std::to_string(curr)+","+ std::to_string(all_done)+");";
 	this->connect();
 	char* err = 0;
 	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
@@ -172,8 +178,28 @@ project ProjRepo :: remove(project* data){
 	// it doesn't matter what info they're about to give us.
 	// try to find best matching part, i mean uuid's, or names.
 	// names are important for projects so make name column unique.
-	std::string sql = "DELETE FROM PROJECT WHERE id=";
+	std::string sql = "DELETE FROM PROJECT WHERE id="+data->get_title();
 	return *data;
+}
+
+void ProjRepo :: remove(std::string title) throw (const char*){
+	if(title == "master"){
+		throw "You can't delete master branch.\n";
+	}
+	char* err;
+		
+	project p = find(title);
+	SettingsRepo* sr = new SettingsRepo;
+	int current_branch_id = sr->curr_branch();
+	if(p.is_archived()) throw "You can't delete archived branch.\n";
+	if(!p.is_all_done()) throw "There is unfinished todos in this branch are you really want to delete it?\n";
+	if(p.get_id() == current_branch_id) throw "You can't delete the branch you are in. Please change the branch before deleting it.\n";
+
+	this->connect();
+	std::string sql = "DELETE FROM PROJECT WHERE title='" + title+"';";	
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	
+	this->close();
 }
 
 // Not important maybe edit in the future if you need this feature.
@@ -193,13 +219,29 @@ project ProjRepo :: find(int id){
 	this->projects.clear();
 
 	std::string sql = "SELECT * FROM PROJECT WHERE id="+std::to_string(id)+";";
-	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->projects), &err);
 
 	this->close();
 	if(this->projects.size() > 0) return this->projects[0];
 	project p;
 	return p;
 }
+
+project ProjRepo :: find_exact_match(std::string title){
+	char* err = 0;
+	this->connect();
+	this->projects.clear();
+
+	// Use like sql query here.
+	std::string sql = "SELECT * FROM PROJECT WHERE title='"+title+"';";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->projects), &err);
+	this->close();
+
+	if(this->projects.size() > 0) return this->projects[0];
+	project p;
+	return p;
+}
+
 
 project ProjRepo :: find(std::string title){
 	
@@ -208,8 +250,8 @@ project ProjRepo :: find(std::string title){
 	this->projects.clear();
 
 	// Use like sql query here.
-	std::string sql = "SELECT * FROM PROJECT WHERE title LIKE '"+title+"'%;";
-	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+	std::string sql = "SELECT * FROM PROJECT WHERE title LIKE '"+title+"%';";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->projects), &err);
 	this->close();
 
 	if(this->projects.size() > 0) return this->projects[0];
@@ -222,7 +264,7 @@ std::vector<project> ProjRepo :: findAll(){
 	this->connect();
 	this->projects.clear();
 	std::string sql = "SELECT * FROM PROJECT;";
-	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav("proj", this->projects), &err);
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->projects), &err);
 
 	this->close(); 	
 	return this->projects;
@@ -238,8 +280,26 @@ int ProjRepo :: count(){
 // ////////////////////////////////////
 
 void TodoRepo :: save(m_todo* data){
-	const char* sql = "INSERT INTO TODO (val, val, val, val) VALUES ()";
+
+//	std::string uuid = data->get_uuid();
+	bool done = data->is_done();
+	bool archived = data->is_archived();
+	int lvl = data->get_importance_lvl();
+	std::string todo = data->get_todo();
+	std::string desc = data->get_desc();;
+	std::string cr_time = data->get_create_time();
+	std::string lu_time = data->get_last_update_time();
+	int proj_id = data->get_project_id();	
 	
+	std::string sql = "INSERT INTO M_TODO(done, archived, level, todo, description, create_time, last_update_time, project_id) VALUES ("+std::to_string(done)+","+std::to_string(archived)+","+std::to_string(lvl)+",'"+todo+"','"+desc+"','"+cr_time+"','"+lu_time+"',"+std::to_string(proj_id)+");";
+
+	char* err =0;
+	this->connect();
+	
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	std::cout<<"\n"<<err<<"\n";
+
+	this->close();	
 }
 
 m_todo TodoRepo :: remove(m_todo* data){
@@ -260,9 +320,87 @@ m_todo TodoRepo :: find(int id){
 }
 
 std::vector<m_todo> TodoRepo :: findAll(){
-	return std::vector<m_todo>();
+	char* err = 0;
+	this->connect();
+	this->todos.clear();
+	std::string sql = "SELECT * FROM M_TODO;";
+
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->todos), &err);
+	this->close();
+	return this->todos;	
+}
+
+std::vector<m_todo> TodoRepo :: find_undone_todos(int branch){
+	char* err = 0;
+	this->connect();
+	this->todos.clear();
+	std::string sql = "SELECT * FROM M_TODO WHERE done=0 AND project_id="+std::to_string(branch)+";";
+	
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->todos), &err);
+	
+	this->close();
+	return this->todos;	
+}
+
+std::vector<m_todo> TodoRepo :: findAll(int branch){
+	
+	char* err = 0;
+	this->connect();
+	this->todos.clear();
+	std::string sql = "SELECT * FROM M_TODO WHERE project_id="+std::to_string(branch)+";";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->todos), &err);
+
+	this->close(); 	
+	return this->todos;
 }
 
 int TodoRepo :: count(){
 	return -1;
+}
+
+
+// //////////////////////////////////
+// ////////// SETTINGS ///////////////
+// ///////////////////////////////////
+
+static int settings_callback(void *param, int argc, char **argv, char **azColName){
+
+	int* branch = static_cast<int*>(param);
+//	*branch = std::atoi(argv[0]);
+	*branch = std::atoi(argv[0]);
+	
+	return 0;
+}
+
+
+void SettingsRepo :: save(settings* data){}
+settings SettingsRepo :: remove(settings* data){return *data;}
+settings SettingsRepo :: update(settings* old, settings* _new){return *old;}
+settings SettingsRepo :: find(settings* similar){return *similar;}
+settings SettingsRepo :: find(int id){settings* todo = nullptr;return *todo;}
+std::vector<settings> SettingsRepo :: findAll(){return std::vector<settings>();}
+int SettingsRepo :: count(){return -1;}
+
+int SettingsRepo :: curr_branch(){
+	
+	char* err = 0;
+	int branch = -1;
+
+	this->connect();
+	std::string sql = "SELECT curr_branch_id FROM SETTINGS WHERE id=1";
+
+	int rc = sqlite3_exec(db, sql.c_str(), settings_callback, static_cast<void*>(&branch), &err);
+
+	this->close();
+	return branch;
+}
+
+void SettingsRepo :: update_curr_branch(int branch){
+	
+	char* err = 0;
+	this->connect();
+	std::string sql = "UPDATE SETTINGS SET curr_branch_id="+std::to_string(branch)+" WHERE id=1";;
+
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	this->close();
 }
