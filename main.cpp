@@ -22,6 +22,7 @@ void execute_branch(int, std::vector<std::string>&);
 void execute_note(int, std::vector<std::string>&);
 void execute_category(int, std::vector<std::string>&);
 void execute_checkout(int, std::vector<std::string>&);
+void execute_log(int);
 
 void about_note();
 void about_branch();
@@ -34,11 +35,14 @@ void delete_branch(int, std::vector<std::string>&); // it needs to throw an exce
 
 void show_notes(int, std::vector<std::string>&);
 void add_note(int, std::vector<std::string>&);
-void list_undone_detailed_todos(std::vector<m_todo>&);
+void list_detailed_todos(std::vector<m_todo>&);
 void list_todos(std::vector<m_todo>&);
 void update_note(int);
 void delete_note(int);
 
+void list_category(int, std::vector<std::string>&);
+void delete_category(int, std::vector<std::string>&);
+void add_category(int, std::vector<std::string>&);
 
 // EMOJI UNICODE START
 std::string red_circle = "\xF0\x9F\x94\xB4";
@@ -63,6 +67,7 @@ CatRepo* cr = new CatRepo;
 ProjRepo* pr = new ProjRepo;
 SettingsRepo* sr = new SettingsRepo;
 TodoRepo* tr = new TodoRepo;
+LogRepo* lr = new LogRepo;
 
 int main(int argc, char** argv){
 
@@ -89,7 +94,7 @@ int main(int argc, char** argv){
 	if(action == "note" && argc>=3) execute_note(argc, cli_arguments); 
 	if(action == "category" && argc>=3) execute_category(argc, cli_arguments); 
 	if(action == "checkout" && argc>=3) execute_checkout(argc, cli_arguments); 
-
+	if(action == "log") execute_log(argc>=3?std::stoi(cli_arguments[2]):-1);	
 }
 
 void help(){
@@ -126,11 +131,12 @@ void about_note(){
 	
 	std::cout<<"\n\n"<<flame<<flame<<" Usage "<<poo<<poo<<"\n\n";
 	std::cout<<"  "<<dollar<<"tod note [<command>] [<args>], --help\n\n";
-	std::cout<<"  Description:\n  Use this";
-	std::cout<<"\n  Example Usage:\n";
-	std::cout<<"\n  To create new notes.\n";
+	std::cout<<"  Description:\n  Use this command to create, delete, update and list notes. You can create notes only with title (title is mandatory) or you can also add multiple properties too. You can delete notes according to their id. You can list undone notes, done notes or detailed notes.";
+	std::cout<<"\n\n  Example Usage:\n";
 	std::cout<<"\n    "<<dollar<<"tod note --title 'hello to my new todo'\n";
-	std::cout<<"\nNOTE: Note about something.\n\n\n";
+	std::cout<<"\n  Explanation: Created a note only with title.\n\n";
+	std::cout<<"\n    "<<dollar<<"tod note -t <note-title> -i <0...2> -d <note-description> -c <category-name>\n";
+	std::cout<<"\n  Explanation: Created a note with multiple properties.\n\n\n";
 
 	exit(1);
 }
@@ -138,11 +144,17 @@ void about_category(){
 		
 	std::cout<<"\n\n"<<flame<<flame<<" Usage "<<poo<<poo<<"\n\n";
 	std::cout<<"  "<<dollar<<"tod category [<command>] [<args>], --help\n\n";
-	std::cout<<"  Description:\n  Use this";
+	std::cout<<"  Description:\n  Use this command to create, list, delete categories and you can get detailed info about category. This means you can print all of the information about category with todos belong to that category.";
 	std::cout<<"\n  Example Usage:\n";
-	std::cout<<"\n  To create new category.\n";
-	std::cout<<"\n    "<<dollar<<"tod cat --title 'hello to my new cat'\n";
-	std::cout<<"\nNOTE: Category about something.\n\n\n";
+	std::cout<<"\n  To create a new category.\n";
+	std::cout<<"\n    "<<dollar<<"tod category -t 'Personal' -d 'Description about the category'\n";
+	std::cout<<"\nNOTE: Title is mandatory to create a category. Also you can specify the description to that category.\n";
+	std::cout<<"\n  To list all categories with details.\n";
+	std::cout<<"\n    "<<dollar<<"tod category -l -d\n";
+	std::cout<<"\n  Get detailed info about category.\n";
+	std::cout<<"\n    "<<dollar<<"tod category -di <category-name>\n";
+	std::cout<<"\nNOTE: With the method above you can have a detailed information about category. And the difference between -i and -di is; The first one prints todos non-detailed the second one also prints todos detailed to.\n";
+	std::cout<<"\n\n\n";
 
 	exit(1);
 }
@@ -299,7 +311,7 @@ void show_notes(int argc, std::vector<std::string>& argv){
 	if(argc == 4 && (argv[3]=="--details" || argv[3]=="-d")){
 		// list detailed notes here...
 		std::vector<m_todo> todos = tr->find_all_todos(curr_branch);
-		list_undone_detailed_todos(todos);
+		list_detailed_todos(todos);
 	}  
 
 	if(argc == 4 && (argv[3]=="--undone" || argv[3]=="-u")){
@@ -311,13 +323,13 @@ void show_notes(int argc, std::vector<std::string>& argv){
 	if(argc == 5 && (argv[3]=="--details" || argv[3]=="-d") && (argv[4]=="--undone" || argv[4]=="-u")){
 		// list unfinsihed todos with details.
 		std::vector<m_todo> todos = tr->find_undone_todos(curr_branch);
-		list_undone_detailed_todos(todos);
+		list_detailed_todos(todos);
 	}
 	
 	if(argc == 5 && (argv[3]=="--undone" || argv[3]=="-u") && (argv[4]=="--details" || argv[4]=="-d")){
 		// list unfinsihed todos with details.
 		std::vector<m_todo> todos = tr->find_undone_todos(curr_branch);
-		list_undone_detailed_todos(todos);
+		list_detailed_todos(todos);
 	}
 
 //  print help message here.	
@@ -339,7 +351,8 @@ void list_todos(std::vector<m_todo>& todos){
 			std::cout<<" "<<tod.get_todo()<<RESET<<std::endl;
 		}std::cout<<std::endl;
 }
-void list_undone_detailed_todos(std::vector<m_todo>& todos){
+
+void list_detailed_todos(std::vector<m_todo>& todos){
 
 	std::cout<<std::endl;
 	for(m_todo tod : todos){
@@ -390,22 +403,16 @@ void add_note(int argc, std::vector<std::string>& argv){
 	}
 	std::cout<<"argc: "<<argc<<"\n";
 	// title is mandatory to create a new todo...	
-/*	if(argv[2]=="--title" || argv[2]=="-t"){
-		std::string title = argv[3];
-		// Add note to current branch at db_repo
-		m_todo* new_note = new m_todo(title);
-		tr->save(new_note);
-	}
-*/
 	// Next arguments will start at 4th index.
 	// We don't know exactly which argument can be given
 	// So I will create a map to fill and create a new todo
 	std::unordered_map<std::string, std::string> command_map;
 	for(int i=2; i<argc; i+=2)
 		command_map[argv[i]] = argv[i+1];
-	
-	for(auto it : command_map)
-		std::cout<<it.first<<", "<<it.second<<"\n";
+
+//  TESTING	
+//	for(auto it : command_map)
+//		std::cout<<it.first<<", "<<it.second<<"\n";
 	
 	if((command_map.find("--title") != command_map.end()) && (command_map.find("-t") != command_map.end())){
 		std::cout<<std::endl<<RED<<"Wrong number of arguments!"<<RESET<<std::endl;
@@ -448,6 +455,104 @@ void add_note(int argc, std::vector<std::string>& argv){
 	exit(1);
 }
 
-void execute_category(int argc, std::vector<std::string>& argv){
-
+void execute_log(int num){
+	std::vector<log> logs = lr->findAll();
+	int border = logs.size()-num-1;
+	for(int i=logs.size()-1; i> (num!=-1?border:-1); --i){
+		std::cout<<"\nLog Type:      "<<MAGENTA<<logs[i].get_log_type()<<RESET;
+		std::cout<<"\nLog Message:   "<<logs[i].get_desc()<<"\n\n";
+	}std::cout<<std::endl;
+	
+	exit(1);
 }
+
+void execute_category(int argc, std::vector<std::string>& argv){
+	
+	if(argv[2]=="--help" || argv[2]=="-h") about_category();
+	if(argv[2]=="--list" || argv[2]=="-l") list_category(argc, argv);
+
+	if(!argc>=4) {
+		std::cout<<std::endl<<RED<<"Wrong number of arguments."<<RESET<<std::endl;
+		exit(1);
+	}	
+
+	if(argv[2]=="--delete" || argv[2]=="-d") delete_category(argc, argv);
+	
+	if(argc==4 && (argv[2]=="--info" || argv[2]=="-i")){
+		category c = cr->find_best_match(argv[3]);
+		std::vector<m_todo> todos = tr->find_all_by_category(c.get_id());
+		std::cout<<"Id:            "<<c.get_id()<<std::endl;
+		std::cout<<"Title:         "<<c.get_title()<<std::endl;
+		std::cout<<"Description:   "<<c.get_desc()<<std::endl;
+		std::cout<<"Todo count:     "<<todos.size()<<"\n";
+
+		list_todos(todos);	
+		
+		exit(1);
+	}
+
+	if(argc==4 && (argv[2]=="--detailed-info" || argv[2]=="-di")){
+		category c = cr->find_best_match(argv[3]);
+		std::vector<m_todo> todos = tr->find_all_by_category(c.get_id());
+		std::cout<<"Id:            "<<c.get_id()<<std::endl;
+		std::cout<<"Title:         "<<c.get_title()<<std::endl;
+		std::cout<<"Description:   "<<c.get_desc()<<std::endl;
+		std::cout<<"Todo count:    "<<todos.size()<<"\n";
+
+		list_detailed_todos(todos);	
+		
+		exit(1);
+	}
+	add_category(argc, argv);
+	
+	exit(1);
+}
+
+void list_category(int argc, std::vector<std::string>& argv){
+	if(argc==3){
+		// just print all
+		std::vector<category> categories = cr->findAll();
+		for(category c : categories)
+			std::cout<<std::endl<<c.get_title()<<"\n";
+		std::cout<<std::endl;
+		exit(1);
+	}	
+
+	if(argc==4 && (argv[3]=="--details" || argv[3]=="-d")){
+		std::vector<category> categories = cr->findAll();
+		for(category c : categories){
+			std::cout<<"Id:            "<<c.get_id();
+			std::cout<<"\nTitle:         "<<c.get_title();
+			std::cout<<"\nDescription:   "<<c.get_desc()<<"\n\n";
+		}
+		exit(1);
+	}
+
+	exit(1);
+}
+
+void delete_category(int argc, std::vector<std::string>& argv){
+	exit(1);
+}
+
+void add_category(int argc, std::vector<std::string>& argv){
+	
+	if(argc==4 && (argv[2]=="--title" || argv[2]=="-t")){
+		std::string title = argv[3];
+		category* c = new category(title);
+		cr->save(c);
+		exit(1);
+	}
+
+	if(argc==6 && (argv[4]=="--description" || argv[4]=="-d")){
+		std::string title = argv[3];
+		std::string description = argv[5];
+		category* c = new category(title, description);
+		cr->save(c);
+		exit(1);
+	}
+
+	
+	exit(1);
+}
+

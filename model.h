@@ -201,6 +201,12 @@ public:
 	int get_id();
 	std::string get_log_type();
 	std::string get_desc();
+
+	void fill_log(std::unordered_map<std::string, char*> map){
+		this->id = std::atoi(map["id"]);
+		this->log_type = map["log_type"];
+		this->description = map["description"];
+	}
 };
 
 

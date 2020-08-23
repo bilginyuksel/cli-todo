@@ -34,6 +34,7 @@ public:
 	std::vector<m_todo> findAll() override;
 	std::vector<m_todo> find_all_todos(int);
 	std::vector<m_todo> find_undone_todos(int);
+	std::vector<m_todo> find_all_by_category(int);
 	void make_todo_done(int);
 	int count() override;
 };
@@ -93,6 +94,21 @@ public:
 	void update_curr_branch(int);
 };
 
+class LogRepo : public CLIAppRepo<log>{
+private:
+	char* TAG = "log";
+	std::vector<log> logs;
+
+	void save(log* data) override;
+	log remove(log* data) override;
+	log update(log* old, log* _new) override;
+	log find(log* similar) override;
+	log find(int id) override;
+	log find(std::string);
+	int count() override;
+public:	
+	std::vector<log> findAll() override;
+};
 struct sql_type_and_vector {
 	char* type;
 	void* vec;	

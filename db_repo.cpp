@@ -51,6 +51,11 @@ static int callback(void *param, int argc, char **argv, char **azColName){
 		project p;
 		p.fill_project(map);
 		pr->push_back(p);
+	}else if(type == "log"){
+		std::vector<log>* lr = static_cast<std::vector<log>*>(stav->vec);
+		log l;
+		l.fill_log(map);
+		lr->push_back(l);
 	}
 
 	return 0;
@@ -64,8 +69,8 @@ static int callback(void *param, int argc, char **argv, char **azColName){
 void CatRepo :: save(category* data){
 	std::string title = data->get_title();
 	std::string description = data->get_desc();
-	std::cout<<"title= "<<title<<"\n";
-	std::cout<<"description= "<<description<<"\n";
+//	std::cout<<"title= "<<title<<"\n";
+//	std::cout<<"description= "<<description<<"\n";
 	std::string sql = "INSERT INTO CATEGORY(title, description) VALUES ('"+title+"', '"+description+"');";
 	this->connect();
 	char* err = 0;
@@ -323,8 +328,9 @@ void TodoRepo :: save(m_todo* data){
 
 	SettingsRepo* sr = new SettingsRepo;
 	int proj_id = sr->curr_branch();
+	int cat_id = data->get_category_id();
 	
-	std::string sql = "INSERT INTO M_TODO(done, archived, level, todo, description, create_time, last_update_time, project_id) VALUES ("+std::to_string(done)+","+std::to_string(archived)+","+std::to_string(lvl)+",\""+todo+"\",\""+desc+"\",'"+cr_time+"','"+lu_time+"',"+std::to_string(proj_id)+");";
+	std::string sql = "INSERT INTO M_TODO(done, archived, level, todo, description, create_time, last_update_time, project_id, category_id) VALUES ("+std::to_string(done)+","+std::to_string(archived)+","+std::to_string(lvl)+",\""+todo+"\",\""+desc+"\",'"+cr_time+"','"+lu_time+"',"+std::to_string(proj_id)+","+std::to_string(cat_id)+");";
 
 	char* err =0;
 	this->connect();
@@ -375,6 +381,16 @@ m_todo TodoRepo :: find(int id){
 	if(this->todos.size() >0) return this->todos[0];
 	m_todo t;
 	return t;
+}
+
+std::vector<m_todo> TodoRepo :: find_all_by_category(int cat_id){
+	char* err =0;
+	this->connect();
+	this->todos.clear();
+	std::string sql = "SELECT * FROM M_TODO WHERE category_id="+std::to_string(cat_id)+";";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->todos), &err);
+	this->close();
+	return this->todos;
 }
 
 void TodoRepo :: make_todo_done(int id){
@@ -471,4 +487,26 @@ void SettingsRepo :: update_curr_branch(int branch){
 
 	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
 	this->close();
+}
+
+
+// ////////////////////////////////////
+// ////////// LOG ///////////////////
+// //////////////////////////////////////
+
+void LogRepo :: save(log* data){}
+log LogRepo :: remove(log* data){return *data;}
+log LogRepo :: update(log* old, log* _new){return *old;}
+log LogRepo :: find(log* similar){return *similar;}
+log LogRepo :: find(int id){log* todo = nullptr;return *todo;}
+int LogRepo :: count(){return -1;}
+
+std::vector<log> LogRepo :: findAll(){
+	char* err = 0;
+	this->connect();
+	this->logs.clear();
+	std::string sql = "SELECT * FROM LOG;";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->logs), &err);
+	this->close();
+	return this->logs;
 }
