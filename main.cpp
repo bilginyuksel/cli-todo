@@ -41,7 +41,7 @@ void update_note(int);
 void delete_note(int);
 
 void list_category(int, std::vector<std::string>&);
-void delete_category(int, std::vector<std::string>&);
+void delete_category(int);
 void add_category(int, std::vector<std::string>&);
 
 // EMOJI UNICODE START
@@ -123,7 +123,14 @@ void about_branch(){
 	std::cout<<"\n  Example Usage:\n";
 	std::cout<<"\n  To create new branches.\n";
 	std::cout<<"\n    "<<dollar<<"tod branch my-new-branch\n";
-	std::cout<<"\nNOTE: You can't create branches that you have.\n\n\n";
+	std::cout<<"\nNOTE: You can't create branches that you already have.\n";
+	std::cout<<"\n  To delete a branch.\n";	
+	std::cout<<"\n    "<<dollar<<"tod branch --delete my-new-branch\n";
+	std::cout<<"    "<<dollar<<"tod branch -d my-new-branch\n";
+	std::cout<<"\n  To list all branches.\n";
+	std::cout<<"\n    "<<dollar<<"tod branch -a\n";
+	std::cout<<"    "<<dollar<<"tod branch -all";
+	std::cout<<"\n\n\n";
 	// You can add all branch functionality and emoji explanations also.
 	exit(1);
 }
@@ -133,10 +140,22 @@ void about_note(){
 	std::cout<<"  "<<dollar<<"tod note [<command>] [<args>], --help\n\n";
 	std::cout<<"  Description:\n  Use this command to create, delete, update and list notes. You can create notes only with title (title is mandatory) or you can also add multiple properties too. You can delete notes according to their id. You can list undone notes, done notes or detailed notes.";
 	std::cout<<"\n\n  Example Usage:\n";
-	std::cout<<"\n    "<<dollar<<"tod note --title 'hello to my new todo'\n";
+	std::cout<<"\n    "<<dollar<<"tod note --title 'hello to my new todo'";
 	std::cout<<"\n  Explanation: Created a note only with title.\n\n";
-	std::cout<<"\n    "<<dollar<<"tod note -t <note-title> -i <0...2> -d <note-description> -c <category-name>\n";
-	std::cout<<"\n  Explanation: Created a note with multiple properties.\n\n\n";
+	std::cout<<"\n    "<<dollar<<"tod note -t <note-title> -i <0...2> -d <note-description> -c <category-name>";
+	std::cout<<"\n  Explanation: Created a note with multiple properties.\n\n";
+	std::cout<<"\n    "<<dollar<<"tod note --delete <note-id>";
+	std::cout<<"\n    "<<dollar<<"tod note -d <note-id>";
+	std::cout<<"\n  Explanation: Delete the note.\n\n";
+	std::cout<<"\n    "<<dollar<<"tod note -l";
+	std::cout<<"\n    "<<dollar<<"tod note -l -d";
+	std::cout<<"\n    "<<dollar<<"tod note -l -u -d";
+	std::cout<<"\n  Explanation: List the notes. First one for normal listing, second one for detailed listing. Use the third command to list undone todos only.\n\n";
+	std::cout<<"\n    "<<dollar<<"tod note -f <note-id>";
+	std::cout<<"\n    "<<dollar<<"tod note --finish <note-id>";
+	std::cout<<"\n  Explanation: Change note's status unfinished to finished.";
+	
+	std::cout<<"\n\n\n";
 
 	exit(1);
 }
@@ -151,6 +170,8 @@ void about_category(){
 	std::cout<<"\nNOTE: Title is mandatory to create a category. Also you can specify the description to that category.\n";
 	std::cout<<"\n  To list all categories with details.\n";
 	std::cout<<"\n    "<<dollar<<"tod category -l -d\n";
+	std::cout<<"\n  To delete a category.\n";
+	std::cout<<"\n    "<<dollar<<"tod category --delete <category-id>\n";
 	std::cout<<"\n  Get detailed info about category.\n";
 	std::cout<<"\n    "<<dollar<<"tod category -di <category-name>\n";
 	std::cout<<"\nNOTE: With the method above you can have a detailed information about category. And the difference between -i and -di is; The first one prints todos non-detailed the second one also prints todos detailed to.\n";
@@ -240,21 +261,21 @@ void add_new_branch(std::string name){
 }
 
 void delete_branch(int argc, std::vector<std::string>& argv){
-		// expect a @param
-		// param should be the branch name will be deleted.
-		if(argc < 4) {
-			std::cout<<"\nPlease enter a branch name to delete.\n";
-			exit(1);
-		}
-	
-		std::string branch_name_to_delete = argv[3];
-		try{
-			pr->remove(branch_name_to_delete);
-		}catch(const char* err){
-			std::cout<<err;
-			exit(1);
-		}
-		
+	// expect a @param
+	// param should be the branch name will be deleted.
+	if(argc < 4) {
+		std::cout<<"\nPlease enter a branch name to delete.\n";
+		exit(1);
+	}
+
+	std::string branch_name_to_delete = argv[3];
+	try{
+		pr->remove(branch_name_to_delete);
+	}catch(const char* err){
+		std::cout<<err;
+		exit(1);
+	}
+	exit(1);		
 }
 
 void show_all_branches(){
@@ -476,7 +497,7 @@ void execute_category(int argc, std::vector<std::string>& argv){
 		exit(1);
 	}	
 
-	if(argv[2]=="--delete" || argv[2]=="-d") delete_category(argc, argv);
+	if((argv[2]=="--delete" || argv[2]=="-d") && argc==4) delete_category(std::stoi(argv[3]));
 	
 	if(argc==4 && (argv[2]=="--info" || argv[2]=="-i")){
 		category c = cr->find_best_match(argv[3]);
@@ -512,8 +533,10 @@ void list_category(int argc, std::vector<std::string>& argv){
 	if(argc==3){
 		// just print all
 		std::vector<category> categories = cr->findAll();
+		
+		std::cout<<std::endl;
 		for(category c : categories)
-			std::cout<<std::endl<<c.get_title()<<"\n";
+			std::cout<<c.get_title()<<"\n";
 		std::cout<<std::endl;
 		exit(1);
 	}	
@@ -531,7 +554,8 @@ void list_category(int argc, std::vector<std::string>& argv){
 	exit(1);
 }
 
-void delete_category(int argc, std::vector<std::string>& argv){
+void delete_category(int id){
+	cr->remove(id);
 	exit(1);
 }
 

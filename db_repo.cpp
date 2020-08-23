@@ -86,6 +86,16 @@ category CatRepo :: remove(category* data) {
 	return *data;
 }
 
+bool CatRepo :: remove(int id){
+	char* err;
+	this->connect();
+	std::string sql = "DELETE FROM CATEGORY WHERE NOT EXISTS (SELECT * FROM M_TODO WHERE M_TODO.category_id=CATEGORY.id AND M_TODO.done=0);";
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	this->close();	
+	ProjRepo* pr = new ProjRepo;
+	pr->update_branch_status();	
+	return false;
+}
 
 category CatRepo :: update(category* old, category* _new) {
 	return *old;

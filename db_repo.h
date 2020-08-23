@@ -48,6 +48,7 @@ private:
 public:
 	void save(category* data) override;
 	category remove(category* data) override;
+	bool remove(int id);
 	category update(category* old, category* _new) override;
     category find(category* similar) override;
 	category find(int id) override;
