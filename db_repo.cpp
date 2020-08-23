@@ -129,6 +129,19 @@ category CatRepo :: find(std::string title){
 	return *c;
 }
 
+category CatRepo :: find_best_match(std::string title){
+	char *err = 0;
+	this->connect();
+	this->categories.clear();	
+	std::string sql = "SELECT * FROM CATEGORY WHERE title LIKE '"+title+"%';";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->categories), &err);
+	this->close();
+
+	if(this->categories.size() >0) return this->categories[0];
+	category c;
+	return c;
+}
+
 std::vector<category> CatRepo :: findAll() {
 	char *err = 0;
 	this->connect();
@@ -283,6 +296,15 @@ int ProjRepo :: count(){
 	return -1;
 }
 
+void ProjRepo :: update_branch_status(){
+	
+	char* err = 0;
+	this->connect();
+	std::string sql = "UPDATE PROJECT SET all_done=1 WHERE NOT EXISTS (SELECT * FROM M_TODO WHERE PROJECT.id=M_TODO.project_id AND TODO.done=0)";
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	this->close();
+}
+
 
 // ////////////////////////////////////
 // //////////   MTODO  //////////////
@@ -302,7 +324,7 @@ void TodoRepo :: save(m_todo* data){
 	SettingsRepo* sr = new SettingsRepo;
 	int proj_id = sr->curr_branch();
 	
-	std::string sql = "INSERT INTO M_TODO(done, archived, level, todo, description, create_time, last_update_time, project_id) VALUES ("+std::to_string(done)+","+std::to_string(archived)+","+std::to_string(lvl)+",'"+todo+"','"+desc+"','"+cr_time+"','"+lu_time+"',"+std::to_string(proj_id)+");";
+	std::string sql = "INSERT INTO M_TODO(done, archived, level, todo, description, create_time, last_update_time, project_id) VALUES ("+std::to_string(done)+","+std::to_string(archived)+","+std::to_string(lvl)+",\""+todo+"\",\""+desc+"\",'"+cr_time+"','"+lu_time+"',"+std::to_string(proj_id)+");";
 
 	char* err =0;
 	this->connect();
@@ -319,6 +341,21 @@ m_todo TodoRepo :: remove(m_todo* data){
 	return *data;
 }
 
+void TodoRepo :: remove(int id){
+	char* err = 0;
+	this->connect();
+	std::string sql = "DELETE FROM M_TODO WHERE id="+std::to_string(id)+";";
+
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	this->close();
+
+	// Update branch status after deleting any todos.
+	ProjRepo* pr = new ProjRepo;
+	pr->update_branch_status();
+	delete pr; 
+
+}
+
 m_todo TodoRepo :: update(m_todo* old, m_todo* _new){
 	return *old;
 }
@@ -328,8 +365,28 @@ m_todo TodoRepo :: find(m_todo* similar){
 }
 
 m_todo TodoRepo :: find(int id){
-	m_todo* todo = nullptr;
-	return *todo;
+	char* err = 0;
+	this->connect();
+	this->todos.clear();
+	std::string sql = "SELECT * FROM M_TODO WHERE id="+std::to_string(id)+";";
+	int rc = sqlite3_exec(db, sql.c_str(), callback, convert_to_stav(TAG, this->todos), &err);
+	this->close();
+
+	if(this->todos.size() >0) return this->todos[0];
+	m_todo t;
+	return t;
+}
+
+void TodoRepo :: make_todo_done(int id){
+	char *err = 0;
+	this->connect();
+	std::string sql = "UPDATE M_TODO SET done=1 WHERE id="+std::to_string(id)+";";
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
+	this->close();
+
+	ProjRepo* pr = new ProjRepo;
+	pr->update_branch_status();
+	delete pr;
 }
 
 std::vector<m_todo> TodoRepo :: findAll(){

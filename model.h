@@ -13,6 +13,7 @@ class category;
 class todo;
 class log;
 class settings;
+class todo_builder;
 
 class project{
 private:
@@ -114,7 +115,7 @@ private:
 	std::string lu_time;
 
 public:
-//	class builder;
+	friend class todo_builder;
 	
 	m_todo(){
 		this->uuid = "sampleuuid";
@@ -152,13 +153,42 @@ public:
 		this->done = std::atoi(map["done"]);
 		this->archived = std::atoi(map["archived"]);
 		this->lvl = std::atoi(map["level"]); // check this maybe it is level
-		this->proj_id = std::atoi(map["project_id"]);	
+		this->proj_id = std::atoi(map["project_id"]);
+		this->cat_id = map["category_id"]?std::atoi(map["category_id"]):0;
 		this->todo = map["todo"];
 		this->description = map["description"];
 		this->cr_time = map["create_time"];
 		this->lu_time = map["last_update_time"];
 		this->create_time = 0;
 		this->last_update_time = 0;
+	}
+};
+
+class todo_builder {
+private:
+	m_todo* tod;
+public:
+	todo_builder(std::string todo){
+		tod = new m_todo(todo);
+	}
+	
+	todo_builder* desc(std::string desc){
+		tod->description = desc;
+		return this;
+	}
+	
+	todo_builder* important(int imp){
+		tod->lvl = imp;
+		return this;
+	}	
+
+	todo_builder* category(int id){
+		tod->cat_id = id;
+		return this;
+	}
+	
+	m_todo* build(){
+		return tod;
 	}
 };
 

@@ -27,12 +27,14 @@ private:
 public:
 	void save(m_todo* data) override;
 	m_todo remove(m_todo* data) override;
+	void remove(int);
 	m_todo update(m_todo* old, m_todo* _new) override;
 	m_todo find(m_todo* similar) override;
 	m_todo find(int id) override;
 	std::vector<m_todo> findAll() override;
 	std::vector<m_todo> find_all_todos(int);
 	std::vector<m_todo> find_undone_todos(int);
+	void make_todo_done(int);
 	int count() override;
 };
 
@@ -53,6 +55,7 @@ public:
 
 	// Find category by title - <category-name>
 	category find(std::string title);
+	category find_best_match(std::string title);
 };
 
 class ProjRepo : public CLIAppRepo<project>{
@@ -71,6 +74,7 @@ public:
 	project find_exact_match(std::string);
 	void make_status_undone(int);
 	void remove(std::string) throw (const char*);
+	void update_branch_status();
 };
 
 class SettingsRepo : public CLIAppRepo<settings>{

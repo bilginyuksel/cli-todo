@@ -84,6 +84,14 @@ std::string m_todo :: get_desc(){
 	return description;
 }
 
+std::string m_todo :: get_cr_time(){
+	return cr_time;	
+}
+
+std::string m_todo :: get_lu_time(){
+	return lu_time;
+}
+
 std::string m_todo :: get_create_time(){
 	return ctime(&create_time);
 }
@@ -98,6 +106,7 @@ project* m_todo :: get_proj(){
 category* m_todo :: get_cat(){
 	return nullptr;
 }
+
 
 // ////////////////////////////////////
 // //////////////  LOG  ///////////////////
