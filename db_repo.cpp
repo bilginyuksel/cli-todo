@@ -3,7 +3,7 @@
 
 template <class T>
 void CLIAppRepo<T> :: connect(){
-	int err = sqlite3_open("db_todo_cli", &db);
+	int err = sqlite3_open("/etc/db_todo_cli", &db);
 //	if(err){
 //		std::cout<<"error happened\n";
 //	}
@@ -282,7 +282,7 @@ project ProjRepo :: find_exact_match(std::string title){
 
 project ProjRepo :: find(std::string title){
 	
-	char* err = 0;
+/*	char* err = 0;
 	this->connect();
 	this->projects.clear();
 
@@ -293,7 +293,8 @@ project ProjRepo :: find(std::string title){
 
 	if(this->projects.size() > 0) return this->projects[0];
 	project p;
-	return p;
+	return p;*/
+	return find_exact_match(title);
 }
 
 std::vector<project> ProjRepo :: findAll(){

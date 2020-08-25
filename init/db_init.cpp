@@ -45,10 +45,10 @@ int main(){
 
 
 	// delete files automatically.
-	int status = remove(SQL_FILE);
+/*	int status = remove(SQL_FILE);
 	if(status == 0) std::cout<<"SQL file deleted successfully!\n";
 	else std::cout<<"SQL file couldn't deleted!.\n";
-
-
+*/
+	std::system("mv db_todo_cli /etc/");
 	return 0;
 }

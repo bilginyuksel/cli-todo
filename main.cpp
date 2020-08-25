@@ -90,7 +90,7 @@ int main(int argc, char** argv){
 	 * */
 
 	// All code will be exited after execution.
-	if(action == "branch" && argc>=3) execute_branch(argc, cli_arguments); 
+	if(action == "branch" && argc>=2)execute_branch(argc, cli_arguments); 
 	if(action == "note" && argc>=3) execute_note(argc, cli_arguments); 
 	if(action == "category" && argc>=3) execute_category(argc, cli_arguments); 
 	if(action == "checkout" && argc>=3) execute_checkout(argc, cli_arguments); 
@@ -223,6 +223,7 @@ void execute_branch(int argc, std::vector<std::string>& argv){
 	// branch name is a must
 	// argv <options>, [-a, --all, -d, --delete]
 	// argv [--name]
+	if(argc==2) show_all_branches();
 
 	if(argv[2] == "--help" || argv[2] == "-h")
 		about_branch();
