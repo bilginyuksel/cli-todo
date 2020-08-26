@@ -19,6 +19,7 @@ You can set up the application from terminal or UI.
 > cd cli-todo/
 > git branch support/windows
 > git pull origin support/windows
+> git checkout support/windows
 > cd init/
 > ./dbw
 ## Set up environment variables for tod.exe...
