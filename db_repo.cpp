@@ -3,7 +3,7 @@
 
 template <class T>
 void CLIAppRepo<T> :: connect(){
-	int err = sqlite3_open("/home/bilginyuksel/cli-todo/init/db_todo_cli", &db);
+	int err = sqlite3_open("C:/cli-todo/init/db_todo_cli", &db);
 //	if(err){
 //		std::cout<<"error happened\n";
 //	}
