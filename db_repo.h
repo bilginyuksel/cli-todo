@@ -77,6 +77,7 @@ public:
 	void make_status_undone(int);
 	void remove(std::string) throw (const char*);
 	void update_branch_status();
+	void remove_force(std::string);
 };
 
 class SettingsRepo : public CLIAppRepo<settings>{

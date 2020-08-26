@@ -32,6 +32,7 @@ void about_checkout();
 void add_new_branch(std::string);
 void show_all_branches();
 void delete_branch(int, std::vector<std::string>&); // it needs to throw an exception
+void delete_force_branch(int, std::vector<std::string>&);
 
 void show_notes(int, std::vector<std::string>&);
 void add_note(int, std::vector<std::string>&);
@@ -231,6 +232,9 @@ void execute_branch(int argc, std::vector<std::string>& argv){
 	if(argv[2] == "-a" || argv[2] == "--all")
 		show_all_branches();
 
+	if(argv[2] == "-D")
+		delete_force_branch(argc, argv);
+
 	if(argv[2] == "-d" || argv[2] == "--delete")
 		delete_branch(argc, argv);
 
@@ -274,10 +278,27 @@ void delete_branch(int argc, std::vector<std::string>& argv){
 		pr->remove(branch_name_to_delete);
 	}catch(const char* err){
 		std::cout<<err;
-		exit(1);
 	}
 	exit(1);		
 }
+
+void delete_force_branch(int argc, std::vector<std::string>& argv){
+
+	if(argc<4){
+		std::cout<<"\nPlease enter a branch name to delete.\n";
+		exit(1);
+	}
+	
+	std::string branch_name_to_delete = argv[3];
+	try{
+		pr->remove_force(branch_name_to_delete);
+
+	}catch(const char* err){
+		std::cout<<err;
+	}
+	exit(1);
+}
+
 
 void show_all_branches(){
 	std::vector<project> proj = pr->findAll();
@@ -423,7 +444,7 @@ void add_note(int argc, std::vector<std::string>& argv){
 		std::cout<<std::endl<<RED<<"Wrong number of arguments!"<<RESET<<std::endl;
 		exit(1);
 	}
-	std::cout<<"argc: "<<argc<<"\n";
+//	std::cout<<"argc: "<<argc<<"\n";
 	// title is mandatory to create a new todo...	
 	// Next arguments will start at 4th index.
 	// We don't know exactly which argument can be given

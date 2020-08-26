@@ -49,6 +49,20 @@ int main(){
 	if(status == 0) std::cout<<"SQL file deleted successfully!\n";
 	else std::cout<<"SQL file couldn't deleted!.\n";
 */
-	std::system("mv db_todo_cli /etc/");
+//	std::system("mv ../tod /bin/");
+//	std::system("mv db_todo_cli ../");
+/*	std::ofstream ofs;
+	std::ifstream ifs;
+
+	ifs.open("~/.profile");
+	ofs.open("~/.profile", std::ios::app);
+		
+	if(ifs.is_open())
+		ofs<<"\nexport PATH=~/cli_todo/:$PATH\n";
+		
+	ifs.close();
+	ofs.close();
+*/
+
 	return 0;
 }

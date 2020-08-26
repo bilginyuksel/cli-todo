@@ -3,7 +3,7 @@
 
 template <class T>
 void CLIAppRepo<T> :: connect(){
-	int err = sqlite3_open("/etc/db_todo_cli", &db);
+	int err = sqlite3_open("/home/bilginyuksel/cli-todo/init/db_todo_cli", &db);
 //	if(err){
 //		std::cout<<"error happened\n";
 //	}
@@ -236,6 +236,23 @@ void ProjRepo :: remove(std::string title) throw (const char*){
 	std::string sql = "DELETE FROM PROJECT WHERE title='" + title+"';";	
 	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
 	
+	this->close();
+}
+
+void ProjRepo :: remove_force(std::string title){
+	if(title == "master"){
+		throw "You can't delete master branch.\n";
+	}
+	char* err;
+	project p = find(title);
+	SettingsRepo* sr = new SettingsRepo;
+	int current_branch_id = sr->curr_branch();
+
+	if(p.get_id() == current_branch_id) throw "You can't delete the branch you are in. Please change the branch before deleting it.\n";
+
+	this->connect();
+	std::string sql = "DELETE FROM PROJECT WHERE title='" + title+"';";	
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, 0, &err);
 	this->close();
 }
 
