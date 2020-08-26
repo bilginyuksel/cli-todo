@@ -16,7 +16,10 @@ $ sudo mv tod /bin/  ## Optional if you want to use the application from any dir
 You can set up the application from terminal or UI.
 ```terminal
 > git clone https://github.com/bilginyuksel/cli-todo.git
-> cd cli-todo/init/
+> cd cli-todo/
+> git branch support/windows
+> git pull origin support/windows
+> cd init/
 > ./dbw
 ## Set up environment variables for tod.exe...
 ```
