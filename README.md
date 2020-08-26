@@ -4,6 +4,7 @@ Manage your To-do list very easily from CLI. You can save your to-dos in a struc
 
 > NOTE: The application is still not bug free and ready for production. There is no known bug exists. I will build the application and I will give you two executables one for set up other for the application. I will explain what you have to do to run the app right now below.
 
+### UNIX
 ```bash
 $ git clone https://github.com/bilginyuksel/cli-todo.git
 $ cd cli-todo/init/
@@ -11,7 +12,17 @@ $ ./dbw
 $ cd ..
 $ sudo mv tod /bin/  ## Optional if you want to use the application from any directory.
 ```
-All finished. Now you can start using the application.
+### WINDOWS
+You can set up the application from terminal or UI.
+```terminal
+> git clone https://github.com/bilginyuksel/cli-todo.git
+> cd cli-todo/init/
+> ./dbw
+## Set up environment variables for tod.exe...
+```
+Download the windows release version from github. Double click dbw.exe file in cli-todo/init folder. Then set the environment variables for tod.exe.
+
+_All finished. Now you can start using the application._
 
 #### Example Usage..
 ```bash
