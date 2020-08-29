@@ -3,6 +3,7 @@
 #include <sqlite3.h>
 #include <string>
 #include <unordered_map>
+#include <cstdio>
 
 template <class T>
 class CLIAppRepo{
