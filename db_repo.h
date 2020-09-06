@@ -1,6 +1,6 @@
 #include "model.h"
 #include <vector>
-#include <sqlite3.h>
+#include "sqlite3.h"
 #include <string>
 #include <unordered_map>
 #include <cstdio>
