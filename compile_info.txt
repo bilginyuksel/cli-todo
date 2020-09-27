@@ -1,0 +1,1 @@
+g++ main.cpp model.cpp db_repo.cpp sqlite3.o -Isqlite3 -o tod
