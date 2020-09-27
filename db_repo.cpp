@@ -3,15 +3,7 @@
 
 template <class T>
 void CLIAppRepo<T> :: connect(){
-	char text[255];
-	FILE *name;
-	name = popen("whoami", "r");
-	std::fgets(text, sizeof(text), name);
-	pclose(name);
-	std::string whoami(text); whoami.pop_back(); // remove space character.
-
-	std::string path = "/home/"+whoami+"/cli-todo/init/db_todo_cli";
-	int err = sqlite3_open(path.c_str(), &db);
+	int err = sqlite3_open("C:/cli-todo/init/db_todo_cli", &db);
 //	if(err){
 //		std::cout<<"error happened\n";
 //	}
