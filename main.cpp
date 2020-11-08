@@ -46,22 +46,22 @@ void delete_category(int);
 void add_category(int, std::vector<std::string>&);
 
 // EMOJI UNICODE START
-std::string red_circle = "\xF0\x9F\x94\xB4";
-std::string blue_circle = "\xF0\x9F\x94\xB5";
+std::string red_circle = "[X]";
+std::string blue_circle = "[O]";
 std::string blue_book = "\xF0\x9F\x93\x98";
-std::string left_point = "\xF0\x9F\x91\x88";
-std::string right_point = "\xF0\x9F\x91\x89";
-std::string poo = "\xF0\x9F\x92\xA9";
+std::string left_point = "<==";
+std::string right_point = "==>";
+std::string poo = " *_* ";
 std::string confused_face = "\xF0\x9F\x98\x95";
-std::string exclamation_mark = "\xE2\x9D\x97";
-std::string question_mark = "\xE2\x9D\x93";
-std::string base_cross_mark = "\xE2\x9D\x8E";
-std::string cross_mark = "\xE2\x9D\x8C";
-std::string check_mark = "\xE2\x9C\x85";
+std::string exclamation_mark = "!";
+std::string question_mark = "?";
+std::string base_cross_mark = "X";
+std::string cross_mark = "[X]";
+std::string check_mark = "";
 std::string warning_sign = "\xE2\x9A\xA0"; // very tiny
-std::string clock_emoji = "\xE2\x8C\x9B";
-std::string dollar = "\xF0\x9F\x92\xB2";
-std::string flame = "\xF0\x9F\x94\xA5";
+std::string clock_emoji = "#";
+std::string dollar = "$ ";
+std::string flame = "**";
 // EMOJI UNICODE END
 
 CatRepo* cr = new CatRepo;
@@ -385,7 +385,7 @@ void show_notes(int argc, std::vector<std::string>& argv){
 void list_todos(std::vector<m_todo>& todos){
 		std::cout<<std::endl;
 		for(m_todo tod : todos){
-			if(tod.is_done()) std::cout<<check_mark;
+			if(tod.is_done()) std::cout<<"-"<<check_mark;
 			else if(tod.get_importance_lvl()==2) std::cout<<exclamation_mark;
 			else if(tod.get_importance_lvl()==1) std::cout<<question_mark;
 			else if(tod.get_importance_lvl()==0) std::cout<<clock_emoji;
@@ -405,7 +405,7 @@ void list_detailed_todos(std::vector<m_todo>& todos){
 		std::cout<<"\tCategory:  "<<(tod.get_category_id()?c.get_title():"NULL");
 		std::cout<<"\n\n\t";
 		if(tod.is_archived()) std::cout<<blue_book;
-		if(tod.is_done()) std::cout<<check_mark;
+		if(tod.is_done()) std::cout<<"-"<<check_mark;
 		else if(tod.get_importance_lvl()==2) std::cout<<exclamation_mark;
 		else if(tod.get_importance_lvl()==1) std::cout<<question_mark;
 		else if(tod.get_importance_lvl()==0) std::cout<<clock_emoji;
